@@ -1,0 +1,19 @@
+// Cài đặt Cloudflare Worker cho cuốn sổ. Chỉ cần sửa 2 chỗ có chữ ĐỔI:
+{
+  "name": "so-tay",                         // ĐỔI: đúng tên Worker của bạn trên Cloudflare
+  "main": "worker.js",
+  "compatibility_date": "2025-09-01",
+  "assets": {
+    "directory": "./",
+    "binding": "ASSETS",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "none"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "so-tay",
+      "database_id": "DAN-ID-DATABASE-VAO-DAY"   // ĐỔI: dán Database ID của D1 (Storage & Databases → D1 → so-tay)
+    }
+  ]
+}

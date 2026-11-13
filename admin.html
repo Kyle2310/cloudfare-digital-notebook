@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Sổ tay · Admin</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap">
+<style>
+  :root { --paper: #fbf2e2; --ink: #2b2723; --muted: #6f6a63; --line: #e6d9c2; --red: #cf4c64; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.5 "Montserrat", system-ui, sans-serif; }
+  main { max-width: 640px; margin: 0 auto; padding: 28px 16px 60px; }
+  h1 { font-size: 1.5em; margin: 0 0 4px; }
+  p.sub { color: var(--muted); margin: 0 0 22px; }
+  label { font-weight: 600; display: block; margin-bottom: 6px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; }
+  input { flex: 1; min-width: 180px; font: inherit; padding: 9px 12px; border: 1.5px solid var(--line); border-radius: 10px; background: #fff; }
+  button { font: inherit; font-weight: 600; padding: 9px 14px; border-radius: 10px; border: 1.5px solid var(--ink); background: #fff; cursor: pointer; }
+  button.danger { background: var(--red); border-color: var(--red); color: #fff; }
+  button:disabled { opacity: .5; cursor: default; }
+  #msg { min-height: 1.5em; margin: 12px 0 18px; font-weight: 600; }
+  #msg.err { color: var(--red); }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); }
+  th { font-size: .85em; color: var(--muted); font-weight: 600; }
+  td.n { text-align: right; font-variant-numeric: tabular-nums; width: 4em; }
+  td.b { width: 1%; white-space: nowrap; }
+  td.b button { padding: 5px 10px; font-size: .85em; }
+  h2 { font-size: 1.2em; margin: 40px 0 4px; }
+  .sg { background: #fff; border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 14px; margin: 10px 0; }
+  .sg h3 { margin: 0 0 2px; font-size: 1.05em; }
+  .sg .meta { color: var(--muted); font-size: .85em; margin-bottom: 6px; }
+  .sg dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 2px 10px; font-size: .92em; }
+  .sg dt { color: var(--muted); }
+  .sg dd { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .sg .del { margin-top: 8px; padding: 5px 10px; font-size: .85em; }
+  tr.sec td { padding-top: 20px; font-weight: 700; border-bottom: 2px solid var(--line); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Quản lý lượt 👍</h1>
+  <p class="sub">Đưa lượt thích của một quán hoặc tất cả quán về 0.</p>
+
+  <label for="key">Mã admin</label>
+  <div class="row">
+    <input id="key" type="password" autocomplete="current-password" placeholder="Mã ADMIN_KEY đặt trong Netlify / Cloudflare">
+    <button id="all" class="danger" type="button">Reset tất cả về 0</button>
+  </div>
+  <div id="msg" role="status"></div>
+
+  <table>
+    <thead><tr><th>Quán</th><th style="text-align:right">👍</th><th></th></tr></thead>
+    <tbody id="list"></tbody>
+  </table>
+
+  <h2>Hộp góp ý</h2>
+  <p class="sub">Bản Cloudflare: góp ý hiện ở đây (nhập mã admin rồi bấm Xem). Bản Netlify: xem trong Netlify → Forms.</p>
+  <div class="row">
+    <button id="sg-load" type="button">Xem góp ý</button>
+    <button id="sg-all" class="danger" type="button" hidden>Xoá tất cả góp ý</button>
+  </div>
+  <div id="sg-msg" role="status" style="margin:12px 0;font-weight:600"></div>
+  <div id="sg-list"></div>
+</main>
+
+<script src="js/data.js"></script>
+<script>
+const API = "/api/votes";
+const $ = id => document.getElementById(id);
+const msg = (t, err) => { $("msg").textContent = t; $("msg").className = err ? "err" : ""; };
+let counts = {};
+
+async function load() {
+  try { const r = await fetch(API, { cache: "no-store" }); if (r.ok) counts = await r.json(); else throw 0; }
+  catch (e) { msg("Không đọc được số lượt (chỉ chạy trên Netlify hoặc Cloudflare).", true); }
+  const rows = [];
+  SECTIONS.forEach(sec => {
+    rows.push(`<tr class="sec"><td colspan="3" style="color:${sec.color}">${sec.name}</td></tr>`);
+    PLACES.filter(p => p.section === sec.id).forEach(p => {
+      const n = (counts[p.id] || {}).up || 0;
+      rows.push(`<tr><td>${p.name}${p.address ? `<br><small style="color:var(--muted)">${String(p.address).split("\n")[0]}</small>` : ""}</td>
+        <td class="n">${n.toLocaleString("vi-VN")}</td>
+        <td class="b"><button type="button" data-id="${p.id}" ${n ? "" : "disabled"}>Về 0</button></td></tr>`);
+    });
+  });
+  $("list").innerHTML = rows.join("");
+}
+
+async function reset(id, label) {
+  const key = $("key").value.trim();
+  if (!key) { msg("Nhập mã admin trước.", true); $("key").focus(); return; }
+  if (!confirm(`Đưa lượt 👍 của ${label} về 0? Không hoàn tác được.`)) return;
+  try {
+    const r = await fetch(API, { method: "DELETE", headers: { "Content-Type": "application/json", Authorization: "Bearer " + key }, body: JSON.stringify(id ? { id } : {}) });
+    if (r.status === 403) return msg("Sai mã admin.", true);
+    if (!r.ok) return msg("Có lỗi, thử lại sau.", true);
+    msg(`Đã reset ${label} về 0.`);
+    load();
+  } catch (e) { msg("Mất kết nối, thử lại sau.", true); }
+}
+
+$("all").onclick = () => reset(null, "tất cả quán");
+$("list").onclick = e => {
+  const b = e.target.closest("button[data-id]");
+  if (b) reset(b.dataset.id, PLACES.find(p => p.id === b.dataset.id).name);
+};
+load();
+
+/* ---- Hộp góp ý (chỉ bản Cloudflare: functions/api/suggest.js) ---- */
+const SG = "/api/suggest";
+const LABELS = [["dia-chi","Địa chỉ"],["loai-quan","Loại"],["so-sao","Số sao"],["khoang-cach","Khoảng cách"],["nen-thu","Nên thử"],["ly-do","Lý do"],["khac","Lý do khác"],["trai-nghiem","Trải nghiệm"],["nguoi-goi-y","Người gợi ý"],["lop","Lớp"]];
+const sgMsg = (t, err) => { $("sg-msg").textContent = t; $("sg-msg").style.color = err ? "var(--red)" : ""; };
+const auth = () => ({ "Content-Type": "application/json", Authorization: "Bearer " + $("key").value.trim() });
+function needKey() { if ($("key").value.trim()) return false; sgMsg("Nhập mã admin trước.", true); $("key").focus(); return true; }
+
+async function loadSuggestions() {
+  if (needKey()) return;
+  try {
+    const r = await fetch(SG, { headers: auth(), cache: "no-store" });
+    if (r.status === 403) return sgMsg("Sai mã admin.", true);
+    if (r.status === 404 || r.status === 405) return sgMsg("Trang này đang chạy trên Netlify: xem góp ý trong Netlify → Forms.", true);
+    if (!r.ok) return sgMsg("Có lỗi, thử lại sau.", true);
+    const items = await r.json();
+    sgMsg(items.length ? `${items.length} góp ý (mới nhất ở trên).` : "Chưa có góp ý nào.");
+    $("sg-all").hidden = !items.length;
+    const list = $("sg-list"); list.textContent = "";
+    items.forEach(it => {
+      const card = document.createElement("div"); card.className = "sg";
+      const h = document.createElement("h3"); h.textContent = it["ten-quan"] || "(không tên)";
+      const meta = document.createElement("div"); meta.className = "meta"; meta.textContent = new Date(it.created).toLocaleString("vi-VN");
+      const dl = document.createElement("dl");
+      LABELS.forEach(([k, label]) => { if (!it[k]) return; const dt = document.createElement("dt"), dd = document.createElement("dd"); dt.textContent = label; dd.textContent = it[k]; dl.append(dt, dd); });
+      const del = document.createElement("button"); del.type = "button"; del.className = "del"; del.textContent = "Xoá góp ý này";
+      del.onclick = () => removeSuggestion(it.id, `góp ý "${it["ten-quan"]}"`);
+      card.append(h, meta, dl, del); list.append(card);
+    });
+  } catch (e) { sgMsg("Mất kết nối, thử lại sau.", true); }
+}
+async function removeSuggestion(id, label) {
+  if (needKey()) return;
+  if (!confirm(`Xoá ${label}? Không hoàn tác được.`)) return;
+  try {
+    const r = await fetch(SG, { method: "DELETE", headers: auth(), body: JSON.stringify(id ? { id } : {}) });
+    if (r.status === 403) return sgMsg("Sai mã admin.", true);
+    if (!r.ok) return sgMsg("Có lỗi, thử lại sau.", true);
+    loadSuggestions();
+  } catch (e) { sgMsg("Mất kết nối, thử lại sau.", true); }
+}
+$("sg-load").onclick = loadSuggestions;
+$("sg-all").onclick = () => removeSuggestion(null, "TẤT CẢ góp ý");
+</script>
+</body>
+</html>

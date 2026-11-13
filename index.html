@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sổ tay official</title>
+<meta name="description" content="Cuốn sổ gợi ý quán ăn của CT 2026.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="css/book.css">
+<script>/* chọn nền dọc/ngang ngay từ đầu, tránh nháy */ if (innerWidth < innerHeight * 0.9) document.documentElement.classList.add("is-solo");</script>
+</head>
+<body class="preload">
+
+<!-- Nền ngoài cuốn sổ: 1 ảnh nền (images/bg/background.webp), phủ kín màn hình -->
+<div class="backdrop" aria-hidden="true"></div>
+
+<div class="topbar">
+  <button type="button" class="pill" id="btn-toc">Mục lục</button>
+  <button type="button" class="pill" id="btn-music" aria-pressed="true">♪ Nhạc: bật</button>
+</div>
+
+<main class="stage" id="stage">
+  <div class="book" id="book" aria-live="polite"></div>
+</main>
+
+<nav class="controls" aria-label="Lật trang">
+  <button type="button" class="arrow" id="btn-prev" aria-label="Trang trước">←</button>
+  <span class="where" id="where">Bìa</span>
+  <button type="button" class="arrow" id="btn-next" aria-label="Trang sau">→</button>
+</nav>
+
+<!-- Form ẩn để Netlify nhận diện khi deploy. Form thật nằm trong cuốn sổ (js/book.js). -->
+<form name="goi-y" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input name="ten-quan"><input name="dia-chi"><input name="loai-quan"><input name="nen-thu"><input name="ly-do"><input name="khac"><input name="trai-nghiem"><input name="so-sao"><input name="khoang-cach"><input name="nguoi-goi-y"><input name="lop"><input name="bot-field">
+</form>
+
+<script src="js/data.js"></script>
+<script>
+/* Chờ phông chữ tải xong rồi mới dựng sổ, để chia trang mục lục theo đúng phông thật (không bị tràn chữ). Tối đa 3 giây. */
+(function () {
+  var started = false;
+  // trang đang bị ẩn (tab nền, khung xem trước chưa mở) thì chưa đo được → chờ tới khi hiện ra mới dựng sổ
+  var visible = function () { return innerWidth > 0 && innerHeight > 0 && document.documentElement.clientHeight > 0; };
+  function start() {
+    if (started) return;
+    if (!visible()) { setTimeout(start, 250); return; }
+    started = true;
+    var s = document.createElement("script"), inline = document.getElementById("book-src");
+    if (inline) s.textContent = inline.textContent; else s.src = "js/book.js";
+    document.body.appendChild(s);
+  }
+  var sample = "Ăn uống Phường Hồng Nguyễn ★ 1–2 km";
+  var faces = ["400 16px Montserrat", "500 16px Montserrat", "600 16px Montserrat", "700 16px Montserrat", "italic 400 16px Montserrat", '16px "Bon Foyage"'];
+  try { Promise.all(faces.map(function (f) { return document.fonts.load(f, sample); })).then(start, start); } catch (e) { start(); }
+  setTimeout(start, 3000);
+})();
+</script>
+</body>
+</html>
