@@ -12,8 +12,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "so-tay",
-      "database_id": "DAN-ID-DATABASE-VAO-DAY"   // ĐỔI: dán Database ID của D1 (Storage & Databases → D1 → so-tay)
+      "database_name": "suggestionform",
+      "database_id": "21629ffd-d7a1-47f1-941e-9d238e601656"   // ĐỔI: dán Database ID của D1 (Storage & Databases → D1 → so-tay)
     }
   ]
 }
