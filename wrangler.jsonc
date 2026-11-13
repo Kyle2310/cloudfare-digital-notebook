@@ -1,6 +1,6 @@
 // Cài đặt Cloudflare Worker cho cuốn sổ. Chỉ cần sửa 2 chỗ có chữ ĐỔI:
 {
-  "name": "thanhsac26",                         // ĐỔI: đúng tên Worker của bạn trên Cloudflare
+  "name": "thanhsac2026",                         // ĐỔI: đúng tên Worker của bạn trên Cloudflare
   "main": "worker.js",
   "compatibility_date": "2025-09-01",
   "assets": {
