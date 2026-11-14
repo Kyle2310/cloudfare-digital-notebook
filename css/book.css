@@ -21,6 +21,8 @@
   --cover: #b8392f;          /* màu bìa tạm */
   --cover-edge: #7a2119;     /* mép bìa (tối hơn màu bìa) */
   --cover-ink: #fff7ea;
+  --board: #8a4a5e;          /* mép bìa cứng dưới chồng giấy, hợp tông ảnh bìa mới */
+  --board-edge: #5e2f40;
 
   --font-script: "Bon Foyage", "Brush Script MT", cursive;
   --font-body: "Montserrat", "Segoe UI", system-ui, sans-serif;
@@ -108,20 +110,20 @@ html.is-solo .backdrop::after  { opacity: 1; }
 }
 .side.lp { left: 0; border-radius: 4px 0 0 4px; background: linear-gradient(to left, rgb(0 0 0 / 0.16), rgb(0 0 0 / 0) 8%), var(--paper); }
 .side.rp { left: var(--pw); border-radius: 0 4px 4px 0; background: linear-gradient(to right, rgb(0 0 0 / 0.16), rgb(0 0 0 / 0) 8%), var(--paper); }
-.side.hard { background: var(--cover); color: var(--cover-ink); border-radius: 3px 7px 7px 3px; }
+.side.hard { background: var(--board); color: var(--cover-ink); border-radius: 3px 7px 7px 3px; }
 .side.hard.lp { border-radius: 7px 3px 3px 7px; }
 /* Bìa to hơn ruột sổ một chút (như sổ thật), che mép giấy khi bắt đầu lật */
 .side.hard { top: calc(var(--ph) * -0.016); height: calc(var(--ph) * 1.032); width: calc(var(--pw) * 1.024); }
 .side.hard.lp { left: calc(var(--pw) * -0.024); }
 
-/* Bìa da: bóng gáy mềm (chỗ bìa uốn vào gáy) + nếp gấp mờ + vân da nhỏ. Nhẹ để ảnh bìa vẫn tự nhiên */
+
+/* Gáy bìa: bóng mềm chỗ bìa uốn vào gáy + nếp gấp mờ (không có vân da) */
 .side.hard::after {
   content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; z-index: 3;
-  background-image: linear-gradient(to right, rgb(0 0 0 / 0.26) 0, rgb(0 0 0 / 0.10) 1.4%, rgb(255 255 255 / 0.05) 2.8%, rgb(0 0 0 / 0.07) 4.2%, rgb(0 0 0 / 0.07) 4.6%, rgb(255 255 255 / 0.04) 5.4%, transparent 8%), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.35 0.23'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23g)'/%3E%3C/svg%3E");
-  background-size: 100% 100%, calc(var(--pw) * 0.42);
+  background: linear-gradient(to right, rgb(0 0 0 / 0.26) 0, rgb(0 0 0 / 0.10) 1.4%, rgb(255 255 255 / 0.05) 2.8%, rgb(0 0 0 / 0.07) 4.2%, rgb(0 0 0 / 0.07) 4.6%, rgb(255 255 255 / 0.04) 5.4%, transparent 8%);
 }
 .side.hard.lp::after {          /* bìa sau: gáy nằm bên phải */
-  background-image: linear-gradient(to left, rgb(0 0 0 / 0.26) 0, rgb(0 0 0 / 0.10) 1.4%, rgb(255 255 255 / 0.05) 2.8%, rgb(0 0 0 / 0.07) 4.2%, rgb(0 0 0 / 0.07) 4.6%, rgb(255 255 255 / 0.04) 5.4%, transparent 8%), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.35 0.23'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23g)'/%3E%3C/svg%3E");
+  background: linear-gradient(to left, rgb(0 0 0 / 0.26) 0, rgb(0 0 0 / 0.10) 1.4%, rgb(255 255 255 / 0.05) 2.8%, rgb(0 0 0 / 0.07) 4.2%, rgb(0 0 0 / 0.07) 4.6%, rgb(255 255 255 / 0.04) 5.4%, transparent 8%);
 }
 
 /* Mép giấy xếp chồng bên dưới (bóng nhiều lớp do JS tính theo số trang) */
@@ -163,7 +165,7 @@ html.is-solo .backdrop::after  { opacity: 1; }
 /* ---------- Bìa ---------- */
 .cover { position: absolute; inset: 0; padding: 10% 9%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.6em; text-align: center; }
 .cover-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.cover.has-img { justify-content: flex-end; padding-bottom: 6%; }
+.cover.has-img { justify-content: flex-end; padding-bottom: 6%; background: var(--board); }
 .cover.has-img .cover-hint { position: relative; margin: 0; padding: 0.35em 1em; border-radius: 999px; background: rgb(40 20 30 / 0.55); color: #fff7ea; opacity: 1; }
 .cover-art {
   width: 78%; aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center;
@@ -328,7 +330,7 @@ html.is-solo .backdrop::after  { opacity: 1; }
 .pad-base { position: absolute; inset: 0; border-radius: 5px;
   /* nhìn qua lỗ đục thấy bóng tối sâu bên trong (không phải mảng xám) */
   background: linear-gradient(#1a2640 0, #1a2640 calc(var(--hy) + var(--hr) + 3px), #efe3cc calc(var(--hy) + var(--hr) + 3px)); pointer-events: none; z-index: 0;
-  box-shadow: 0 1.5px 0 #f6ebd6, 0 3px 0 #d9c9ac, 0 4.5px 0 #f1e4cb, 0 6px 0 #d2c1a2, 0 7.5px 0 var(--cover), 0 14px 26px rgb(0 0 0 / 0.45); }
+  box-shadow: 0 1.5px 0 #f6ebd6, 0 3px 0 #d9c9ac, 0 4.5px 0 #f1e4cb, 0 6px 0 #d2c1a2, 0 7.5px 0 var(--board), 0 14px 26px rgb(0 0 0 / 0.45); }
 /* lỗ đục thật (trong suốt): nhìn xuyên qua thấy vòng lò xo và các tờ bên dưới */
 .psheet { position: absolute; inset: 0; border-radius: 4px; overflow: hidden; z-index: 10;
   -webkit-mask: linear-gradient(#000 0 0) 0 0 / 100% calc(var(--hy) - var(--hr) - 1px) no-repeat,
@@ -341,9 +343,9 @@ html.is-solo .backdrop::after  { opacity: 1; }
 .pad .side, .pad3d .side { position: absolute; left: 0 !important; top: 0 !important; width: var(--pw) !important; height: var(--ph) !important; border-radius: 4px; }
 .pad .side.lp, .pad .side.rp, .pad3d .side.lp, .pad3d .side.rp {
   background: linear-gradient(to bottom, rgb(0 0 0 / 0.10), rgb(0 0 0 / 0) 7%), var(--paper); }
-.pad .side.hard, .pad3d .side.hard { background: var(--cover); }
-.pad .side.hard::after, .pad3d .side.hard::after {
-  background-image: linear-gradient(to bottom, rgb(0 0 0 / 0.24) 0, rgb(0 0 0 / 0.08) 2%, rgb(255 255 255 / 0.05) 3.5%, transparent 7%), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.35 0.23'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23g)'/%3E%3C/svg%3E"); }
+.pad .side.hard, .pad3d .side.hard { background: var(--board); }
+.pad .side.hard::after, .pad3d .side.hard::after {   /* sổ lò xo: gáy ở cạnh trên */
+  background: linear-gradient(to bottom, rgb(0 0 0 / 0.24) 0, rgb(0 0 0 / 0.08) 2%, rgb(255 255 255 / 0.05) 3.5%, transparent 7%); }
 .pdim { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; z-index: 7; }
 /* lò xo: các vòng tròn kim loại 3D */
 .pad-bind { position: absolute; left: 0; top: 0; width: var(--pw); height: 0; perspective-origin: 50% 0; pointer-events: none; }
