@@ -7,7 +7,8 @@
 const BOOK = {
   title: "Sổ tay\nĂn uống",
   edition: "CT 2026",
-  coverImage: "",            // ảnh bìa của ban Truyền thông, vd "images/cover.jpg"
+  coverImage: "images/cover-front.jpg",   // ảnh bìa trước (Guidebook Ẩm thực)
+  backImage: "images/cover-back.jpg",     // ảnh bìa sau (Thanh Sắc); "" = bìa sau kiểu cũ
   logo: "",                  // logo CT năm nay, vd "images/logo.png"
   foreword: [
     "Chào bạn! Đây là một cuốn sổ tay nhỏ do Ban Ẩm thực - Lễ Kết Nghĩa 2026 tổng hợp từ đóng góp của các bạn Cộng tác viên.",

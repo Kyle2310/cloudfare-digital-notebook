@@ -208,7 +208,7 @@ function renderSide(side, i) {
   switch (side.kind) {
     case "cover":
       if (BOOK.coverImage)       // ảnh bìa đã có sẵn tên sổ → chỉ hiện ảnh + lời nhắc
-        return `<div class="cover has-img"><img class="cover-img" src="${esc(BOOK.coverImage)}" alt="${esc(BOOK.title.replace("\n", " "))}"><p class="cover-hint">Chạm để mở sổ</p></div>`;
+        return `<div class="cover has-img"><img class="cover-img" src="${esc(BOOK.coverImage)}" alt="${esc(BOOK.title.replace("\n", " "))}" draggable="false"><p class="cover-hint">Chạm để mở sổ</p></div>`;
       return `<div class="cover">
         ${BOOK.coverImage
           ? `<img class="cover-img" src="${esc(BOOK.coverImage)}" alt="">`
@@ -340,6 +340,8 @@ function renderSide(side, i) {
       return sec ? `<div class="page blank-fill" style="${sec.vars}"></div>` : `<div class="page ruled"></div>`;
 
     case "back":
+      if (BOOK.backImage)        // ảnh bìa sau có sẵn → chỉ hiện ảnh
+        return `<div class="cover back has-img"><img class="cover-img" src="${esc(BOOK.backImage)}" alt="Lễ Kết Nghĩa 2026 – Thanh Sắc" draggable="false"></div>`;
       return `<div class="cover back">
         <div class="logo logo-light">${BOOK.logo ? `<img src="${esc(BOOK.logo)}" alt="">` : `<span>${esc(BOOK.edition)}</span>`}</div>
         <p class="back-note">${esc(BOOK.backNote)}</p>
@@ -402,8 +404,8 @@ bookEl.prepend(stackL, stackR);
 
 function stackShadow(n, dir) {
   const css = getComputedStyle(document.documentElement);
-  const board = css.getPropertyValue("--cover").trim() || "#b8392f";
-  const boardEdge = css.getPropertyValue("--cover-edge").trim() || "#7d241d";
+  const board = css.getPropertyValue("--board").trim() || "#8a4a5e";
+  const boardEdge = css.getPropertyValue("--board-edge").trim() || "#5e2f40";
   const k = Math.max(0.8, PW / 340);                        // 1 lớp giấy ≈ 1px (to hơn trên màn lớn)
   const out = [];
   for (let i = 1; i <= n; i++) out.push(`${(dir * i * k).toFixed(1)}px ${(i * k * 0.8).toFixed(1)}px 0 ${i % 2 ? "#f6f1e6" : "#d9d1c0"}`);
